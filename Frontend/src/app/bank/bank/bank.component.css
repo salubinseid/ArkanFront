@@ -1,0 +1,38 @@
+table {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-width: 500px;
+}
+
+th.mat-header-cell {
+    text-align: left;
+    max-width: 300px;
+}
+.search{
+    border: rgba(11, 237, 237, 0.886);
+    box-shadow: 10, wheat;
+    padding: 3px;
+    margin-left: 3px;
+}
+
+.my-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 98vh;
+    min-width: 80vw;
+    margin-bottom: 10px;
+  }
+.myStyle{
+    display:flex;
+    justify-content:space-around;
+  }
+
+.mat-table {
+overflow: auto;
+max-height: 500px;
+}
+mat-header-cell{
+    font-size: 1.2em;
+    font-weight: bold;
+}

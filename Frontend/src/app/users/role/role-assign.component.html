@@ -1,0 +1,46 @@
+<h4 mat-dialog-title class="card-header">የሰራተኛ ሚና መመደቢያ</h4>
+<form *ngIf="hasPermission('Role-Assign')" [formGroup]="assignRoleForm">
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+    <div class="row">
+      <div class="mt-4 form-group col-sm-12">
+        <label for="employees">ሰራተኛውን ምረጥ</label>
+        <select formControlName="employees" required class="form-control">
+          <option value="">ሰራተኛ ምረጥ</option>
+          <option *ngFor="let emp of employees" value="{{ emp.id }}">
+            {{ emp.fullName }} ({{ emp.username }})
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="roles">የሲስተም ሚና ምረጥ</label>
+        <select formControlName="roles" multiple required class="form-control">
+          <option *ngFor="let role of roles" value="{{ role.id }}">
+            {{ role.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group input-group col-sm-12">
+      <button
+        mat-button
+        class="btn btn-success w-50 text-white"
+        [disabled]="!assignRoleForm.valid"
+        (click)="assignRoleToEmployee()"
+      >
+        {{ actionButton }}
+      </button>
+      <button
+        class="btn btn-danger w-50 text-white"
+        mat-button
+        mat-dialog-close
+      >
+        ዝጋ
+      </button>
+    </div>
+  </div>
+</form>
+
+<div *ngIf="!hasPermission('Role-Assign')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

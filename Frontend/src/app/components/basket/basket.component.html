@@ -1,0 +1,365 @@
+<div
+  fxLayout
+  fxLayoutAlign="center center"
+  *ngIf="totalItems == 0 && hasPermission('Cart-View')"
+  class="mt-2 m-2 alert alert-danger"
+>
+  <h3>ምንም አይነት ሊሸጥ የተዘጋጅ ዕቃ የለም፡፡</h3>
+</div>
+<div class="container" *ngIf="totalItems > 0 && hasPermission('Cart-View')">
+  <form [formGroup]="cashoutForm" class="signin-form">
+    <fieldset
+      class="card mt-2 py-2 px-3 col-md-12"
+      style="display: flex; align-items: center"
+    >
+      <legend class="float-none w-auto p-2">የክፍያ መረጃ</legend>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>ገዥ ደንበኛ ምረጥ</mat-label>
+            <mat-select formControlName="customer_id" required>
+              <mat-option *ngFor="let cust of customers" [value]="cust.id">
+                {{ cust.custName }} ({{ cust.phone }})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-sm-12 col-md-6 col-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>የባንክ ሒሳብ ምረጥ</mat-label>
+            <mat-select formControlName="bank_id" (selectionChange)="bankSelected()">
+              <mat-option *ngFor="let account of accounts" [value]="account.id">
+                {{ account.accountNumber }} ({{ account.bankName }})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div> -->
+        <div class="col-sm-12 col-md-6 col-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>የተከፈለ የገንዘብ መጠን</mat-label>
+            <input
+              matInput
+              value="0"
+              type="text"
+              formControlName="paidAmount"
+              (change)="calculateRemainAmount($event)"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3" *ngIf="isAbroad">
+          <mat-form-field appearance="outline">
+            <mat-label>የተከፈለበት የገንዘብ አይነት</mat-label>
+            <mat-select formControlName="moneyType">
+              <mat-option *ngFor="let type of moneyTypes" [value]="type.id">
+                {{ type.type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3" *ngIf="isAbroad">
+          <mat-form-field appearance="outline">
+            <mat-label>የምንዛሬ ተመን</mat-label>
+            <input
+              type="text"
+              matInput
+              formControlName="exchangeRate"
+              placeholder="የምንዛሬ ተመን"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3">
+          <input
+            type="file"
+            class="file-input"
+            formControlName="image"
+            (change)="selectFileUpload($event)"
+            #fileUpload
+          />
+
+          <div class="file-upload">
+            {{ selectedFile || "የምታያይዘውን ላይስንስ ፋይል ምረጥ፡፡" }}
+            <button
+              mat-mini-fab
+              color="primary"
+              class="btn btn-info upload-btn"
+              (click)="fileUpload.click()"
+            >
+              <mat-icon>attach_file</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>ተጨማሪ መግለጫ ካለ</mat-label>
+            <textarea
+              type="text"
+              matInput
+              rows="3"
+              formControlName="remark"
+            ></textarea>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-sm-12 col-md-6 ">
+          <img [src]="imgUrl" height="100" width="100%" *ngIf="imgUrl" />
+        </div> -->
+        <div
+          class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-end align-items-center"
+        >
+          <button
+            [disabled]="cashoutForm.invalid"
+            class="btn btn-block btn-success"
+            (click)="saleCartItems()"
+          >
+            ሸያጩን ፈጽም
+          </button>
+        </div>
+      </div>
+    </fieldset>
+    <div class="table-responsive">
+      <mat-table
+        class="table-bordered table-sm mat-elevation-z8"
+        style="width: 100%"
+        [dataSource]="dataSource"
+        matSort
+        matSortStart="desc"
+      >
+        <ng-container matColumnDef="itemName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የዕቃ ስም</th>
+          <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="salesQty">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ብዛት</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeSalesQuantity(element.id)"
+          >
+            <input
+              *ngIf="csqEditMode && selected == element.id; else csqViewMode"
+              value="{{ element.salesQty }}"
+              name="salesQty"
+              type="text"
+              size="7"
+              (change)="setSalesQuantity(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #csqViewMode>
+              <span>{{ element.salesQty }} </span>
+            </ng-template>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="driverPhone">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የሹፌር ስልክ</th>
+          <td mat-cell *matCellDef="let element">{{ element.driverPhone }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="salesPrice">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የአንዱ ዋጋ</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeSalesPrice(element.id)"
+          >
+            <input
+              *ngIf="cspEditMode && selected == element.id; else cspViewMode"
+              value="{{ element.salesPrice }}"
+              name="salesPrice"
+              type="text"
+              size="7"
+              (change)="setSalesPrice(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #cspViewMode>
+              <span>{{ element.salesPrice }} </span>
+            </ng-template>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="pay_quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የጭነት ስምምነት</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeUnitTariffQuantity(element.id)"
+          >
+            <input
+              *ngIf="cutqEditMode && selected == element.id; else cutqViewMode"
+              value="{{ element.pay_quantity }}"
+              name="quanity"
+              type="text"
+              size="7"
+              (change)="setUnitTariffQuantity(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #cutqViewMode>
+              <span>{{ element.pay_quantity }} </span>
+            </ng-template>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="unitTariff">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የመጫኛ ዋጋ</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeUnitTariffPrice(element.id)"
+          >
+            <input
+              *ngIf="cutpEditMode && selected == element.id; else cutpViewMode"
+              value="{{ element.unitTariff }}"
+              name="quanity"
+              type="text"
+              size="7"
+              (change)="setUnitTariffPrice(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #cutpViewMode>
+              <span>{{ element.unitTariff }} </span>
+            </ng-template>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="driverLoan">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ለሹፌር የተላከ</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeDriverLoan(element.id)"
+          >
+            <input
+              *ngIf="cdlEditMode && selected == element.id; else cdlViewMode"
+              value="{{ element.driverLoan }}"
+              name="driverLoan"
+              type="text"
+              size="7"
+              (change)="setDriverLoan(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #cdlViewMode>
+              <span>{{ element.driverLoan }} </span>
+            </ng-template>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="otherExpense">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>የጉዞ ውጪ</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (dblclick)="changeOtherExpense(element.id)"
+          >
+            <input
+              *ngIf="coeEditMode && selected == element.id; else coeViewMode"
+              value="{{ element.otherExpense }}"
+              name="driverLoan"
+              type="text"
+              size="7"
+              (change)="setOtherExpense(element, $event)"
+              class="price right-align"
+              pattern="\d+(\.\d{0,2})?"
+              required
+            />
+            <ng-template #coeViewMode>
+              <span>{{ element.otherExpense }} </span>
+            </ng-template>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="salesPrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> የአንዱ ዋጋ </th>
+        <td mat-cell *matCellDef="let element">
+          <input name="price" type="text" size="7"
+            (change)="setItemSalesPrice(element.id,$event)" class="price" pattern="\d+(\.\d{0,2})?" required />
+        </td>
+      </ng-container>
+<td mat-footer-cell  *matFooterCellDef> </td>
+ -->
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ጠቅላላ ዋጋ</th>
+          <td mat-cell *matCellDef="let element">
+            <!-- <span *ngIf='element.orderFrom == "ከመኪና"'> -->
+            {{
+              element.salesPrice * element.salesQty -
+                (element.unitTariff ? element.unitTariff : 0) *
+                  (element.pay_quantity ? element.pay_quantity : 0) +
+                ((element.driverLoan ? element.driverLoan : 0) -
+                  (element.otherExpense ? element.otherExpense : 0)) | number
+            }}
+            <!-- </span> -->
+            <!-- <span *ngIf='element.orderFrom == "ከመጋዘን"'>
+            {{
+
+              (element.salesPrice * element.quantity )
+            }}
+          </span> -->
+          </td>
+          <td
+            mat-footer-cell
+            *matFooterCellDef
+            style="
+              font-style: oblique;
+              font-weight: bold;
+              text-decoration-line: underline wavy;
+            "
+          >
+            {{ grandTotal | number }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>ድርጊት</th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              *ngIf="hasPermission('Cart-Delete')"
+              mat-icon-button
+              style="border: none; background-color: rgb(228, 225, 225)"
+              (click)="removeFromCart(element)"
+            >
+              <mat-icon class="mat-18" color="warn">delete</mat-icon>
+            </button>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+      </mat-table>
+    </div>
+
+    <mat-paginator
+      #paginatorRef
+      class="col-sm"
+      [pageSize]="100"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+    ></mat-paginator>
+    <div class="alert alert-info text-center">
+      <strong>የተጠቃለለ የሽያጭ ድምር = {{ grandTotal }}</strong>
+    </div>
+  </form>
+</div>
+
+<div *ngIf="!hasPermission('Cart-View')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

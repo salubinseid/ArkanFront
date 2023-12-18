@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="card-header">የባንክ ሒሳብ መመዝገቢያ</h2>
+<form  *ngIf='hasPermission("Account-Create")' [formGroup]="bankForm" class="signin-form">
+  <div mat-dialog-content>
+    <div class="alert alert-danger text-center mt-2" [hidden]="!error">{{error}}</div>
+    <div class="row form-group">
+      <div class="col-sm-12 col-md-6 ">
+        <mat-form-field appearance="outline">
+          <mat-label>የሒሳቡ ባለቤት</mat-label>
+          <input type="text" matInput formControlName="accountOwner" autofocus required placeholder="የሒሳቡ ባለቤት">
+        </mat-form-field>
+      </div>
+
+      <!-- <div class="col-sm-12 col-md-6 ">
+        <mat-form-field appearance="outline">
+          <mat-label>የባንክ ስም</mat-label>
+          <input type="text" matInput formControlName="bankName" required placeholder="የባንክ ስም">
+        </mat-form-field>
+      </div> -->
+
+      <div class="col-sm-12 col-md-6">
+        <mat-form-field appearance="outline">
+          <mat-label>ባንኩ ምረጥ</mat-label>
+          <mat-select formControlName="bankName" required >
+            <mat-option  *ngFor="let bank of bankList" [value]="bank.id">
+              {{ bank.bankName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12 col-md-6 ">
+        <mat-form-field appearance="outline">
+          <mat-label>የቅርንጫፍ ስም </mat-label>
+          <input type="text" matInput formControlName="branchName" required placeholder="የቅርንጫፍ ስም">
+        </mat-form-field>
+      </div>
+    <div class="col-sm-12 col-md-6 ">
+      <mat-form-field appearance="outline">
+        <mat-label>የሒሳብ ቁጥር </mat-label>
+        <input type="text" matInput formControlName="accountNumber" required placeholder="የሒሳብ ቁጥር">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6 ">
+      <mat-form-field appearance="outline">
+        <mat-label>የአሁን ባላንስ</mat-label>
+        <input type="text" matInput formControlName="balance" required placeholder="የአሁን ባላንስ">
+        <span class="text-danger" [hidden]="!balance?.errors?.['pattern']">
+          የምታስገባው ሒሳብ ቁጥር ብቻ መሆን አለበት፡፡</span>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="outline">
+        <mat-label>ባንኩ የሚገኝበት ሀገር</mat-label>
+        <mat-select formControlName="country" required >
+          <mat-option  *ngFor="let ctry of countries" [value]="ctry ">
+            {{ ctry }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="outline">
+        <mat-label>ተጨማሪ መግለጫ</mat-label>
+        <textarea matInput formControlName="remark"></textarea>
+      </mat-form-field>
+    </div>
+
+      <div class="col-sm-12">
+        <button mat-button class="text-white fw-bold w-50 btn btn-success rounded"
+        [disabled]="(!bankForm.valid || isClicked)"
+          (click)="addBank()">{{actionButton}}</button>
+        <button class="btn btn-danger text-white fw-bold w-50" mat-button mat-dialog-close>ዝጋ</button>
+      </div>
+    </div>
+    </div>
+</form>
+
+<div *ngIf='!hasPermission("Account-Create")' class="container card text-center" >
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

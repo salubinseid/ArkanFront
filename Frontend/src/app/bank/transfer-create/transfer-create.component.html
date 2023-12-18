@@ -1,0 +1,74 @@
+<h5 mat-dialog-title class="card-header">የሒሳብ ገቢ ማድረጊያ</h5>
+<form *ngIf="hasPermission('Transfer-Create')" [formGroup]="transferForm">
+  <img [src]="imgUrl" height="100" width="200" *ngIf="imgUrl" />
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+    <div class="row form-group">
+      <div class="form-group col-sm-12">
+        <mat-form-field appearance="outline">
+          <mat-label>የገንዝብ መጠን</mat-label>
+          <input
+            matInput
+            type="text"
+            (keyup)="makeCommaFormat()"
+            required
+            formControlName="amount"
+            placeholder="የገንዝብ መጠን"
+          />
+        </mat-form-field>
+        <div style="margin: auto" [hidden]="amount?.errors?.['pattern']">
+          {{ currencyFormat && currencyFormat | number }}
+        </div>
+        <span class="text-danger" [hidden]="!amount?.errors?.['pattern']"
+          >የምታስገባው የገንዝብ መጠን ቁጥር ብቻ መሆን አለበት፡፡</span
+        >
+      </div>
+      <div class="form-group col-sm-12">
+        <mat-form-field appearance="outline">
+          <mat-label>የሚላክለት ደንበኛ</mat-label>
+          <input
+            matInput
+            type="text"
+            required
+            formControlName="transferTo"
+            placeholder="የሚላክለት ደንበኛ"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-group col-sm-12">
+        <mat-form-field appearance="outline">
+          <mat-label>ምክንያት</mat-label>
+          <textarea
+            matInput
+            type="text"
+            formControlName="transreasonferTo"
+            placeholder="ምክንያት"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="form-group input-group col-sm-12">
+      <button
+        mat-button
+        class="btn btn-success w-50 text-white"
+        [disabled]="!transferForm.valid"
+        (click)="addTransfer()"
+      >
+        {{ actionButton }}
+      </button>
+      <button
+        class="btn btn-danger w-50 text-white"
+        mat-button
+        mat-dialog-close
+      >
+        ዝጋ
+      </button>
+    </div>
+  </div>
+</form>
+<div
+  *ngIf="!hasPermission('Transfer-Create')"
+  class="container card text-center"
+>
+  <h3 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h3>
+</div>

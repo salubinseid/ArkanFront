@@ -1,0 +1,23 @@
+{
+	"username": "የተጠቃሚ መለያ",
+	"password": "የይለፍ ቃል",
+	"loginHeader": "ወደ አርካን ሲስተም መግቢያ",
+	"language": "ቋንቋ",
+	"login": "ግባ",
+	"error": "ስህተት",
+	"home": {
+		"welcome": "ወደ አርካን እንኳን ደህና መጡ",
+		"greeting": "ሠላም"
+	},
+	"menu": {
+		"purchseLoad": "ግዥና ጭነት",
+		"purchase": "ግዥ",
+		"load": "ጭነት",
+		"sale": "ሽያጭ",
+		"fromStore": "መጋዘን",
+		"fromTruck": "መኪና",
+		"info": "መረጃ",
+		"customerInfo": "የደንበኛ መረጃ",
+		"transfer": "ማስተላለፊያ"
+	}
+}

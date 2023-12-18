@@ -1,0 +1,357 @@
+<h2 mat-dialog-title class="card-header">የዕቃ ግዥ መረጃ ማጠናከሪያ</h2>
+<mat-stepper headerPosition="bottom" #stepper>
+  <mat-step [stepControl]="addPurchasedItemForm">
+    <ng-template matStepLabel>የዕቃ ግዥ መረጃ ሙላ</ng-template>
+
+    <form
+      [formGroup]="addPurchasedItemForm"
+      *ngIf="hasPermission('Purchase-Create')"
+    >
+      <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+      <div mat-dialog-content>
+        <div class="row from-group mt-1 mb-1">
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <span>
+              <mat-form-field appearance="outline">
+                <mat-label>የዕቃውን አይነት ምርጥ</mat-label>
+                <mat-select
+                  autofocus
+                  formControlName="itemId"
+                  (selectionChange)="selectItem()"
+                >
+                  <mat-option *ngFor="let item of items" [value]="item.id">
+                    {{ item.itemName }} ({{ item.brand }})
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </span>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የጭነት መለያ ኮድ</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="loadingCode"
+                placeholder="የጭነት መለያ ኮድ"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>መለኪያ</mat-label>
+              <mat-select formControlName="unit" required>
+                <mat-option *ngFor="let unit of units" [value]="unit.id">
+                  {{ unit.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline" style="width: 75%">
+              <mat-label>መጋዘን ምርጥ</mat-label>
+              <mat-select
+                formControlName="storeId"
+                (selectionChange)="ItemDelivered($event)"
+              >
+                <mat-option *ngFor="let store of stores" [value]="store.id">
+                  {{ store.storeName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የደረሰው ዕቃ ብዛት </mat-label>
+              <input
+                (keyup)="setProductQty($event)"
+                type="text"
+                matInput
+                formControlName="lateArrivedQty"
+                placeholder="የደረሰው ዕቃ ብዛት"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>ቀሪ የተከፈለ</mat-label>
+              <input
+                type="text"
+                (keyup)="setAdvancePaidAmount($event)"
+                matInput
+                formControlName="remainPaid"
+                placeholder="ቀሪ የተከፈለ"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የምንዛሬ ተመን</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="exchangeRate"
+                placeholder="የምንዛሬ ተመን"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>ተጨማሪ መግለጫ</mat-label>
+              <textarea
+                type="text"
+                matInput
+                rows="3"
+                formControlName="remark"
+              ></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 input-group">
+            <button
+              class="btn btn-danger w-50 py-2 text-white"
+              mat-button
+              mat-dialog-close
+            >
+              ዝጋ
+            </button>
+            <button
+              mat-button
+              class="btn btn-success rounded w-50 text-white py-2"
+              [disabled]="!addPurchasedItemForm.valid || isClicked"
+              (click)="registerPurchasedItem()"
+            >
+              <!-- matStepperNext -->
+              {{ actionButton }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <!-- <mat-step [stepControl]="expenseForm">
+    <ng-template matStepLabel>የተለያየ ግዥ ወጪ መመዝገቢያ</ng-template>
+    <form
+      *ngIf="hasPermission('Expense-Create')"
+      [formGroup]="expenseForm"
+      class="signin-form"
+    >
+      <div mat-dialog-content>
+        <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+        <div class="row form-group">
+          <div class="col-sm-12 col-md-3">
+            <mat-form-field appearance="outline">
+              <mat-label>የወጩን አይነት ምርጥ</mat-label>
+              <mat-select formControlName="expenseName" required>
+                <mat-option
+                  *ngFor="let expense of expenseTypes"
+                  value="{{ expense.id }}"
+                  >{{ expense.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6 col-md-2">
+            <mat-form-field appearance="outline">
+              <mat-label>ወጪ የሆነበት የገንዘብ አይነት ምርጥ</mat-label>
+              <mat-select formControlName="moneyType" required>
+                <mat-option
+                  *ngFor="let money of moneyTypes"
+                  value="{{ money.id }}"
+                  >{{ money.type }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6 col-md-2">
+            <mat-form-field appearance="outline">
+              <mat-label>ወጪ የሆነው የገንዘብ መጠን</mat-label>
+              <input
+                matInput
+                type="number"
+                required
+                formControlName="amount"
+                placeholder="የገንዘብ መጠን"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6 col-md-1">
+            <mat-form-field appearance="outline">
+              <mat-label>የምንዛሬ ተመን</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="expenseExchangeRate"
+                placeholder="የምንዛሬ ተመን"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <mat-form-field appearance="outline">
+              <mat-label>ተጨማሪ መግለጫ</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="col-sm-6 col-md-1">
+            <button
+              mat-button
+              class="btn btn-success rounded text-white w-50"
+              [disabled]="!expenseForm.valid"
+              (click)="addExpense()"
+            >
+              <mat-icon>save</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive" *ngIf="dataSource.data.length > 0">
+        <mat-table
+          *ngIf="dataSource.data.length > 0"
+              class="table-bordered table-sm mat-elevation-z8"
+
+          [dataSource]="dataSource"
+          matSort
+          matSortStart="desc"
+        >
+          <ng-container matColumnDef="sno">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+            <td mat-cell *matCellDef="let item; let i = index"></td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <ng-container matColumnDef="expenseType">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>የወጪ አይነት</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.expenseType }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              ውጪ የተደረገው መጠን
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              class="number-align-right"
+              (dblclick)="changeExpenseAmount(element)"
+            >
+              <input
+                *ngIf="ceaEditMode && selected == element.id; else ceaViewMode"
+                value="{{ element.amount }}"
+                name="tariff"
+                type="text"
+                size="7"
+                (change)="setExpenseAmount(element.id, $event)"
+                class="price"
+                pattern="\d+(\.\d{0,2})?"
+                required
+              />
+              <ng-template #ceaViewMode>
+                <span>{{ element.amount }} </span>
+              </ng-template>
+            </td>
+            <td
+              mat-footer-cell
+              *matFooterCellDef
+              class="fw-bold number-align-right"
+            >
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ውጪ በብር</th>
+            <td mat-cell *matCellDef="let element" class="number-align-right">
+              {{ element.amount * element.exchangeRate }}
+            </td>
+            <td
+              mat-footer-cell
+              *matFooterCellDef
+              class="fw-bold number-align-right"
+            >
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ተጨማሪ መግለጫ</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.description }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <ng-container matColumnDef="updated_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              የተስተካከለበት ቀን
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              title="የምዝገባ ቀን: {{ element.created_at }} ፣ የተስተካከለበት ቀን : {{
+                element.updated_at
+              }}"
+            >
+              {{ element.updated_at | date }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>መዝጋቢ</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.createdBy }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>ድርጊት</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  *ngIf="hasPermission('Expense-Delete')"
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteRecord(element)"
+                >
+                  <mat-icon class="mat-18">delete</mat-icon>
+                </button>
+              </mat-menu>
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+        </mat-table>
+
+        <div mat-dialog-actions>
+          <div class="form-group row input-group">
+            <button
+              class="btn btn-secondary w-50 py-2 text-white"
+              matStepperPrevious
+              mat-button
+            >
+              ተመለስ
+            </button>
+            <button
+              mat-button
+              mat-dialog-close
+              class="btn btn-success rounded text-white w-50"
+              [disabled]="!expenseForm.valid"
+            >
+              ጨርስ
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+</mat-stepper> -->
+  <div
+    *ngIf="!hasPermission('Purchase-Create')"
+    class="container card text-center"
+  >
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+  </div>
+</mat-stepper>

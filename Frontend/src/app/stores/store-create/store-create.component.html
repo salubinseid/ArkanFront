@@ -1,0 +1,48 @@
+<h2 mat-dialog-title class="card-header">መጋዘን/ስቶር መመዝገቢያ</h2>
+<form *ngIf='hasPermission("Store-Create")' [formGroup]="storeForm" class="signin-form">
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{error}}</div>
+    <div class="col-sm-12 ">
+      <mat-form-field appearance="outline">
+        <mat-label>የመጋዘን/ስቶር ስም</mat-label>
+        <input matInput type="text" required formControlName="storeName"  placeholder="የመጋዘን/ስቶር ስም">
+      </mat-form-field>
+    </div>
+    <div class="cols-sm-12">
+        <mat-form-field appearance="outline">
+          <mat-label>የሚገኝበት ሀገር</mat-label>
+          <mat-select formControlName="location" required >
+            <mat-option  *ngFor="let ctry of countries" [value]="ctry ">
+              {{ ctry }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="cols-sm-12">
+        <mat-form-field appearance="outline">
+          <mat-label>ተቆጣጣሪ</mat-label>
+          <mat-select formControlName="managedBy" required >
+            <mat-option  *ngFor="let emp of employees" [value]="emp.id ">
+              {{emp.fullName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    <div class="col-sm-12">
+      <mat-form-field appearance="outline">
+        <mat-label>ስለመጋዘኑ ተጨማሪ ማብራሪያ </mat-label>
+        <textarea  formControlName="remark" placeholder="ስለመጋዘኑ ተጨማሪ ማብራሪያ ካለ" matInput></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12 input-append-group mt-3">
+        <button mat-button class="btn btn-success rounded text-white w-50"
+        [disabled]="(!storeForm.valid || isClicked)"
+          (click)="addStore()">{{actionButton}}</button>
+        <button class="btn btn-danger w-50 text-white" mat-button mat-dialog-close>ዝጋ</button>
+    </div>
+  </div>
+</form>
+<div *ngIf='!hasPermission("Store-Create")' class="container card text-center" >
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

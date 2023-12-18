@@ -1,0 +1,45 @@
+<h2>Data Restoring page</h2>
+<a
+  *ngIf="hasPermission('Data-Reset-All')"
+  mat-button
+  class="btn btn-danger pr-3 mr-4"
+  (click)="dataReset('StoredItem')"
+>
+  <mat-icon>restore</mat-icon> Reset Stored Item</a
+>
+<hr />
+<a
+  *ngIf="hasPermission('Data-Reset-All')"
+  mat-button
+  class="btn btn-danger pr-3 mr-4"
+  (click)="dataReset('SoldItem')"
+>
+  <mat-icon>restore</mat-icon> Reset Sold Item</a
+>
+<hr />
+<a
+  *ngIf="hasPermission('Data-Reset-All')"
+  mat-button
+  class="btn btn-danger pr-3 mr-4"
+  (click)="dataReset('PurchasedItem')"
+>
+  <mat-icon>restore</mat-icon> Reset Purchased Item</a
+>
+<hr />
+<a
+  *ngIf="hasPermission('Data-Reset-All')"
+  mat-button
+  class="btn btn-danger pr-3 mr-4"
+  (click)="dataReset('CustomerTransaction')"
+>
+  <mat-icon>restore</mat-icon> Customer Transaction</a
+>
+<hr />
+<a
+  *ngIf="hasPermission('Data-Reset-All')"
+  mat-button
+  class="btn btn-danger pr-3 mr-4"
+  (click)="dataReset('BankTransaction')"
+>
+  <mat-icon>restore</mat-icon> Reset Bank Transaction</a
+>

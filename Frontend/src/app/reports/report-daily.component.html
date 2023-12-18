@@ -1,0 +1,84 @@
+<div *ngIf="hasPermission('Report-Daily')">
+  <h2 mat-dialog-title class="card-header">የየዕለቱ ጥቅል ሪፖርት</h2>
+    <div class="row" style="background-color: white">
+      <!-- <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+        <mat-form-field fxFlex="100%">
+          <input
+            matInput
+            type="text"
+            class="search"
+            placeholder="ፈልግ"
+            [(ngModel)]="filterData"
+            (keyup)="doFilter()"
+          />
+        </mat-form-field>
+        <i class="fas fa-search mr-2 text-warning"></i>
+      </div> -->
+    </div>
+    <form [formGroup]="dailyReportForm">
+    <div class="report-container input-group row">
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <mat-form-field appearance="fill" style="width:fit-content" >
+          <mat-label>ከቀን...</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="startDate" >
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3">
+            <mat-form-field appearance="fill" style="width:fit-content" >
+              <mat-label>ከቀን...</mat-label>
+              <input matInput [matDatepicker]="picker2" formControlName="endDate" >
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <button
+          mat-button
+          class="btn btn-success rounded"
+          (click)="loadReport()"
+        >
+          ሪፖርት አሳይ
+        </button>
+
+      </div>
+    </div>
+  </form>
+
+  </div>
+
+  <h3 class="alert alert-info font-weight-bold text-center mt-1" *ngIf="dataSource.data.length >0">
+    ከቀን {{myDate.from|date }} እስከ {{myDate.to|date}} ቀን ክንውን ሪፖርት  </h3>
+
+  <h3 class="alert alert-danger font-weight-bold text-center mt-1" *ngIf="dataSource.data.length==0">
+      ከቀን {{myDate.from|date }} እስከ {{myDate.to|date}} ቀን ምንም የተከናወነ ግብይት የለም፡፡  </h3>
+<div class="table-responsive">
+  <mat-table *ngIf="dataSource.data.length >0"
+
+    [dataSource]="dataSource"
+ 
+    matSort
+    matSortStart="desc"
+    class="table-sm table-hover table-bordered mat-elevation-z8"
+
+  >
+   <ng-container  *ngFor="let col of columnHeaders " [matColumnDef]="col.name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ col.label }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <ng-container *ngIf="col.name == 'created_at' || col.name == 'updated_at'; else other">
+          {{ element[col.name] | date }}
+        </ng-container>
+        <ng-template #other> <span *ngIf="col.name=='net'"><strong><u>{{ element[col.name] | number }} </u></strong></span>
+          <span *ngIf="col.name !='net'" #normal>{{ element[col.name] | number}}</span>
+        </ng-template>
+      </mat-cell>
+
+      </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+  </mat-table>
+  </div>

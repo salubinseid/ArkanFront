@@ -1,0 +1,32 @@
+
+::ng-deep .my-custom-panel {
+  width: 65vw;
+
+  @media screen and (max-width: 900px){
+    width: 75vw;
+  }
+  @media screen and (max-width: 500px){
+    width: 90vw;
+  }
+}
+.price{
+    box-shadow: 0 0 1px 1px #06ebb9 ;
+    border-radius: 0.25rem;
+    font: 0.9rem / 0.9 sans-serif;
+    display:flexbox;
+    flex: auto;
+    box-sizing: border-box;
+    width: 90%;
+    text-align: right;
+    padding: 0.5rem 0.75rem;
+    margin-right: 0.5rem;
+}
+.price:valid{
+    color: green;
+    border:  2px solid green;
+}
+.price:invalid{
+    color:red;
+    border:  2px solid red;
+
+}

@@ -1,0 +1,192 @@
+<div class="container" *ngIf="hasPermission('Sold-Item-Detail')">
+  <div class="card">
+    <div class="card-header title">የተሸጠ ዕቃ ዝርዝር</div>
+    <div class="row">
+      <div class="card-body col-4">
+        <span class="detail">
+          የደንበኛ ስም : <strong>{{ info.custName }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          አጠቃላይ ክፍያ : <strong>{{ info.totalPrice | number }}</strong></span
+        >
+      </div>
+      <div class="card-body col-4">
+        <span class="detail">
+          መዝጋቢ : <strong>{{ info.fullName }}</strong></span
+        >
+
+        <br />
+        <span class="detail">
+          የተከፈለ የገንዝብ መጠን :
+          <strong>{{ info.paidAmount | number }}</strong></span
+        >
+      </div>
+      <div class="card-body col-4">
+        <span class="detail">
+          የተሸጠበት ቀን : <strong>{{ info.created_at | date }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          ቀሪ ዕዳ : <strong>{{ info.remainAmount | number }}</strong></span
+        >
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row" style="background-color: white">
+      <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+        <mat-form-field fxFlex="40%">
+          <input
+            matInput
+            type="text"
+            class="search"
+            placeholder="ፈልግ"
+            [(ngModel)]="filterData"
+            (keyup)="doFilter()"
+          />
+        </mat-form-field>
+        <i class="fas fa-search mr-2 text-warning"></i>
+      </div>
+    </div>
+  </div>
+  <mat-table
+    class="table-bordered table-sm mat-elevation-z8"
+    [dataSource]="dataSource"
+    matSort
+    matSortStart="desc"
+  >
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+      <td mat-cell *matCellDef="let item; let i = index">
+        {{ paginatorRef.pageIndex * paginatorRef.pageSize + (i + 1) }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <ng-container matColumnDef="itemName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የዕቃ ስም</th>
+      <td mat-cell *matCellDef="let element">{{ element.itemName }}</td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <ng-container matColumnDef="plateNum">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መኪና / መጋዘን</th>
+      <td mat-cell *matCellDef="let element">
+        <span *ngIf="element.orderFrom == ON_STORE; else onLoad"
+          >{{ element.storeName }}
+        </span>
+        <ng-template #onLoad>
+          <span>{{ element.plateNum }} </span>
+        </ng-template>
+      </td>
+
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <ng-container matColumnDef="itemQty">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ብዛት</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.itemQty }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ totalItem | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="unitName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መለኪያ</th>
+      <td mat-cell *matCellDef="let element">{{ element.unitName }}</td>
+      <td
+        mat-footer-cell
+        *matFooterCellDef
+        class="fw-bold number-align-right"
+      ></td>
+    </ng-container>
+    <ng-container matColumnDef="itemPrice">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የተሸጠበት ዋጋ</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.itemPrice }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ totalPrice | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="loadingQty">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የጭነት ስምምነት</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.loadingQty }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <ng-container matColumnDef="loadingPrice">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የመጫኛ ስምምነት ዋጋ</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.loadingPrice }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ totalTransportCost | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="driverLoan">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ለሹፌር የተላከ</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.driverLoan }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ totalDriverLoan | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="otherExpense">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ጉዞ ውጪ</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{ element.otherExpense }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ totalOtherExpense | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="orderFrom">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ከየት</th>
+      <td mat-cell *matCellDef="let element">{{ element.orderFrom }}</td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <ng-container matColumnDef="net">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የተጣራ</th>
+      <td mat-cell *matCellDef="let element" class="number-align-right">
+        {{
+          element.itemPrice * element.itemQty +
+            element.driverLoan -
+            (element.otherExpense + element.loadingQty * element.loadingPrice)
+            | number
+        }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef class="fw-bold number-align-right">
+        {{ grandTotal | number }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ቀን</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.created_at | date }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+    <!-- <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Recorded By</th>
+            <td mat-cell *matCellDef="let element"> {{element.recorded}} </td>
+        <td mat-footer-cell  *matFooterCellDef> </td>
+    </ng-container> -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+  </mat-table>
+  <mat-paginator
+    #paginatorRef
+    class="col-sm"
+    [pageSize]="100"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+  ></mat-paginator>
+</div>
+<div
+  *ngIf="!hasPermission('Sold-Item-Detail')"
+  class="container card text-center"
+>
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

@@ -1,0 +1,45 @@
+
+<h2 mat-dialog-title class="card-header">ገቢ ዕቃ መመዝገቢያ</h2>
+<!-- <form #registerItemForm="ngForm" (ngSubmit)="onSubmit()"  class="signin-form"> -->
+<form *ngIf='hasPermission("Store-Item-Create")'  [formGroup]="addItemToStoreForm" class="signin-form">
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{error}}</div>
+    <div class="from-group mt-3">
+      <label class="label" for="itemId">ዕቃ ምርጥ</label>
+      <div class="input-group">
+        <select autofocus formControlName="itemId" required class="form-control">
+        <option *ngFor="let item of items" value="{{item.id}}">{{item.itemName}} ({{item.brand}})</option>
+      </select>
+      <a mat-button class="btn btn-info text-light" (click)="openDialog()"><i class="fa fa-plus-circle"></i> ዕቃ</a>
+</div>
+    </div>
+    <div class="form-group mt-3">
+      <label class="label" for="store_id">መጋዘን ምርጥ</label>
+      <select formControlName="store_id" required (change)="selectStore($event)" class="form-control">
+        <option *ngFor="let store of stores" value="{{store.id}}">{{store.storeName}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <input type="number" min="1" formControlName="quantity" class="form-control" required>
+      <label class="form-control-placeholder" for="quantity">ብዛት</label>
+    </div>
+    <div class="form-group mt-2">
+      <textarea formControlName="remark"  class="form-control" ></textarea>
+      <label class="form-control-placeholder" for="remark">መግለጫ</label>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <div class="form-group input-group">
+      <div mat-dialog-actions>
+        <button mat-button class="btn btn-success rounded"
+        [disabled]="(!addItemToStoreForm.valid || isClicked)" (click)="addItemToStore()">{{actionButton}}</button>
+        <button class="btn btn-danger" mat-button mat-dialog-close>ዝጋ</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div *ngIf='!hasPermission("Store-Item-Create")' class="container card text-center" >
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>
+

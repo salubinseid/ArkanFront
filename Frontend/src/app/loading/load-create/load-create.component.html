@@ -1,0 +1,265 @@
+<h2 mat-dialog-title class="card-header">የሚጫን ዕቃ መመዝገቢያ</h2>
+<mat-stepper headerPosition="bottom" #stepper>
+  <mat-step [stepControl]="loadForm">
+    <ng-template matStepLabel>የጭነት መረጃ ሙላ</ng-template>
+    <form
+      *ngIf="hasPermission('Load-Create')"
+      [formGroup]="loadForm"
+      class="signin-form"
+      enctype="multipart/form-data"
+    >
+      <div mat-dialog-content>
+        <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+        <div class="row form-group">
+          <!-- <label class="label" for="store_item_id">እቃ ምረጥ</label> -->
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>እቃ ምረጥ</mat-label>
+              <mat-select formControlName="store_item_id" required>
+                <mat-option *ngFor="let item of items" value="{{ item.id }}">
+                  {{ item.itemName }} {{ item.brand }} ({{ item.storeName }} =
+                  {{ item.quantity }})</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>ድክላሬስዮን ቁጥር</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="declaration_num"
+                placeholder="ድክላሬስዮን ቁጥር"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የተጫንው ብዛት</mat-label>
+              <input
+                matInput
+                type="text"
+                required
+                formControlName="quantity"
+                placeholder="የተጫንው ብዛት"
+              />
+            </mat-form-field>
+            <span class="text-danger" [hidden]="!quantity?.errors?.['pattern']"
+              >የምታስገባው ቁጥር ብቻ መሆን አለበት፡፡</span
+            >
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የመኪና የመጫን ስምምነት</mat-label>
+              <input
+                matInput
+                type="text"
+                required
+                formControlName="pay_quantity"
+                placeholder="የመኪና የመጫን ስምምነት"
+              />
+            </mat-form-field>
+            <span
+              class="text-danger"
+              [hidden]="!pay_quantity?.errors?.['pattern']"
+              >የምታስገባው ቁጥር ብቻ መሆን አለበት፡፡</span
+            >
+          </div>
+          <!-- <div class="col-sm-4 mt-4">
+        <input
+          type="text"
+          formControlName="unitTariff"
+          class="form-control"
+          required
+        />
+        <label class="form-control-placeholder" for="unitTariff"
+          >የአንድ ኩንታል ታሪፍ</label
+        >
+        <span class="text-danger" [hidden]="!unitTariff?.errors?.['pattern']"
+          >የምታስገባው የገንዝብ መጠን ቁጥር ብቻ መሆን አለበት፡፡</span
+        >
+      </div> -->
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የመኪናው ሰሌዳ</mat-label>
+              <input
+                matInput
+                type="text"
+                required
+                formControlName="plateNum"
+                placeholder="የመኪናው ሰሌዳ"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የሹፌር ስም</mat-label>
+              <input
+                matInput
+                type="text"
+                required
+                formControlName="driverName"
+                placeholder="የሹፌር ስም"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የሹፌር ኢትዮ ስልክ</mat-label>
+              <input
+                matInput
+                type="text"
+                required
+                formControlName="driverPhone"
+                placeholder="የሹፌር ኢትዮ ስልክ"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <mat-form-field appearance="outline">
+              <mat-label>የሹፌር የጅቡቲ ስልክ</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="driverPhoneDj"
+                placeholder="የሹፌር የጅቡቲ ስልክ"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <!-- <mat-form-field appearance="outline">
+          <mat-label>የምታያይዘውን ላይስንስ ፋይል ምረጥ፡፡</mat-label> -->
+            <input
+              type="file"
+              class="file-input"
+              formControlName="license"
+              (change)="selectFileUpload($event)"
+              #fileUpload
+            />
+            <span class="file-upload">
+              {{ selectedFile || "የምታያይዘውን ላይስንስ ፋይል ምረጥ፡፡" }}
+              <button
+                mat-mini-fab
+                color="primary"
+                class="upload-btn"
+                (click)="fileUpload.click()"
+              >
+                <mat-icon>attach_file</mat-icon>
+              </button>
+            </span>
+            <!-- </mat-form-field> -->
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <!-- <label class="label" for="remark">መግለጫ</label> -->
+            <mat-form-field appearance="outline">
+              <mat-label>ስለጭነቱ ተጨማሪ ማብራሪያ </mat-label>
+              <textarea
+                formControlName="remark"
+                placeholder="ስለጭነቱ ተጨማሪ ማብራሪያ ስለጭነቱ"
+                matInput
+              ></textarea>
+            </mat-form-field>
+          </div>
+          <!-- </div> -->
+          <div class="input-append">
+            <button
+              mat-button
+              matStepperNext
+              class="btn btn-success rounded w-50 text-white"
+              [disabled]="!loadForm.valid || isClicked"
+              (click)="loadItem()"
+            >
+              {{ actionButton }}
+            </button>
+            <button class="btn btn-danger w-50" mat-button mat-dialog-close>
+              ዝጋ
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup" optional>
+    <div [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>የጭነት መጫኛ ዋጋ በየመዳረሻ</ng-template>
+      <div class="container">
+        <mat-table
+          *ngIf="dataSource.data.length > 0"
+          class="table-bordered table-sm mat-elevation-z8"
+          [dataSource]="dataSource"
+          matSort
+          matSortStart="desc"
+        >
+          <ng-container matColumnDef="checkPointName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>የመዳረሻ ከተማ</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.checkPointName }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="unitTariff">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>የመጫኛ ዋጋ</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.unitTariff }}
+              <input
+                [disabled]="!success"
+                *ngIf="hasPermission('Load-Tariff-Set')"
+                value="{{ tariff }}"
+                name="tariff"
+                title="{{ element.remark }}"
+                type="text"
+                size="7"
+                (change)="updateMedareshTariff(element.id, $event)"
+                class="price form-control-sm"
+                pattern="\d+(\.\d{0,2})?"
+              />
+              <span *ngIf="!hasPermission('Load-Tariff-Set')">
+                {{ element.unitTariff }}
+              </span>
+              {{ element.unitTariff }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </mat-table>
+
+        <div
+          class="container card text-center"
+          *ngIf="dataSource.data.length == 0 && !loading"
+        >
+          <h5 class="text-danger">ምንም አይነት የተመዘገበ መረጃ የለም፡፡</h5>
+        </div>
+      </div>
+      <div class="input-append">
+        <button
+          [disabled]="!success"
+          class="btn btn-success w-50 float-right mt-2 text-white"
+          (click)="closeModal()"
+          mat-button
+          matStepperNext
+        >
+          ጨርስ
+        </button>
+        <button
+          mat-button
+          class="btn btn-secondary w-50 float-right mt-2 text-white"
+          matStepperPrevious
+        >
+          ተመለስ
+        </button>
+      </div>
+      <div>
+        <!-- <button mat-button matStepperPrevious>Back</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>
+
+<div *ngIf="!hasPermission('Load-Create')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

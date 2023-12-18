@@ -1,0 +1,23 @@
+{
+	"username": "Username",
+	"password": "Password",
+	"loginHeader": "Arkan System Autenticator",
+	"language": "Language",
+	"login": "Login",
+	"error": "Error",
+	"home": {
+		"welcome": "Weolcome to Arkan",
+		"greeting": "Hi"
+	},
+	"menu": {
+		"purchseLoad": "Purchase & Load",
+		"purchase": "Purchase",
+		"load": "Load",
+		"sale": "Sales",
+		"fromStore": "Store",
+		"fromTruck": "Truck",
+		"info": "Sales Info",
+		"customerInfo": "Customer Info",
+		"transfer": "Transfer"
+	}
+}

@@ -1,0 +1,45 @@
+@import "../../employee-create/employee-create.component.css";
+
+// .myForm{
+// box-shadow:10px 4px 15px 10px rgba(223, 210, 210, 0.872); border: 2px solid #453764;
+//  padding: 10px 10px ;
+//  margin:10px;
+//  border-radius: 1.25em;
+//  background-color:white;
+ 
+// }
+// .myInput{
+//     box-shadow:2px 4px 5px 5px rgba(223, 210, 210, 0.872); border: 2px solid #453764;
+//     background-color: #fff;
+//     width: 100%;
+//     border: 0 0 0 1 solid;
+//     padding:10px;
+//     margin:0px 0px 0px 0px;
+//     border-radius: 0.75em;
+    
+// }
+::ng-deep .mat-form-field-underline {
+    display: none;
+}
+
+
+// input ::placeholder{
+//     margin:20px 0px 20px 0px;
+// }
+// .mySelect{
+//     box-shadow:2px 4px 5px 5px rgba(235, 230, 230, 0.872); border: 2px solid #453764;
+
+//     background-color: #fff;
+//     width:100%;
+//     padding:10px;
+//     margin:0px 0px 5px 5px;
+//     border-radius: 0.75em;
+
+// }
+// .mat-input{
+//     box-shadow:2px 4px 5px 5px rgba(223, 210, 210, 0.872); border: 2px solid #453764;
+//     width:100%;
+//     padding:10px;
+//     margin:0px 0px 5px 5px;
+//     border-radius: 0.75em;
+// }

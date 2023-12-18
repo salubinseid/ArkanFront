@@ -1,0 +1,54 @@
+<h2 mat-dialog-title class="card-header">የተለያየ የገቢ/የወጪ አይነት መመዝገቢያ</h2>
+<form
+  *ngIf="hasPermission('IncomeExpenseType-Create')"
+  [formGroup]="incomeExpenseForm"
+  class="signin-form"
+>
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+    <div class="row form-group">
+      <div class="col-sm-12 col-md-6 text-right">
+        <label>የገቢ/የወጪ አይነት ምረጥ :</label>
+        </div>
+        <div class="col-sm-12 col-md-6 ">
+
+        <mat-radio-group formControlName="type"  required class="d-flex justify-content-around  justify-content-right" (change)="selectedInOut($event)" aria-label="Select an option">
+
+          <mat-radio-button value="ገቢ">ገቢ</mat-radio-button>
+          <mat-radio-button value="ወጪ">ወጪ</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div class="col-sm-12 col-md-6 ">
+        <mat-form-field appearance="outline">
+          <mat-label>የገቢ/የወጪ አይነት ስም</mat-label>
+          <input matInput type="text"  required formControlName="name"
+           placeholder="የገቢ/የወጪ አይነት ስም">
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12 col-md-6 ">
+        <mat-form-field appearance="outline">
+        <mat-label>ተጨማሪ መግለጫ</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12  form-group input-group">
+      <button class="btn btn-danger w-50 py-2 text-white" mat-dialog-close mat-button > ዝጋ </button>
+
+        <button
+          mat-button
+          class="btn btn-success rounded text-white w-50"
+          [disabled]="!incomeExpenseForm.valid"
+          (click)="addIncomeExpense()"
+        >
+          {{ actionButton }}
+        </button>
+    </div>
+  </div>
+</div>
+</form>
+<div
+  *ngIf="!hasPermission('IncomeExpenseType-Create')"
+  class="container card text-center"
+>
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

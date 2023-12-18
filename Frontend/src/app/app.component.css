@@ -1,0 +1,14 @@
+.cart-no{
+  padding-left: 5px;
+  padding-right: 5px;
+  -webkit-border-radius: 9px;
+  -moz-border-radius: 9px;
+  border-radius: 3px;
+  font-size: 16px;
+  /* background: #e2e91baf; */
+  /* color: #fff; */
+  padding: 1 5px;
+  vertical-align: top;
+  margin-left: -2px; 
+
+}

@@ -1,0 +1,77 @@
+<h2 mat-dialog-title class="card-header">ቀሪ ዕዳ ክፍያ መመዝገቢያ</h2>
+<form *ngIf='hasPermission("Debit-Pay")'  [formGroup]="debitForm" class="signin-form">
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{error}}</div>
+
+    <fieldset class="card mt-2 py-2 px-3">
+      <legend class="float-none w-auto p-2">የክፍያ መረጃ</legend>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <!-- <input type="text" value="{{cust.custName}} ({{cust.phone}})" class="form-controle"/> -->
+            <select formControlName="customer_id" [attr.disabled]="boxStatus" required class="form-control">
+              <option value="">ገዥ ደንበኛ ምረጥ</option>
+              <option *ngFor="let cust of customers" selected  value="{{cust.id}}">{{cust.custName}} ({{cust.phone}})
+              </option>
+            </select>
+            <!-- <input type="text" formControlName="custName"  value="{{customers.custName}}" class="form-control"/> -->
+            <!-- <input type="hidden" formControlName="customer_id" class="form-control" required /> -->
+          <!-- <label class="form-control-placeholder" for="paidAmount">የተከፈለ የገንዘብ መጠን</label> -->
+
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <select formControlName="bank_id" required class="form-control">
+              <option value="">የባንክ ሒሳብ ምረጥ</option>
+              <option *ngFor="let account of accounts" value="{{account.id}}">{{account.accountNumber}}
+                ({{account.bankName}})
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <input type="text" formControlName="paidAmount" (change)="calculateRemainAmount($event)"
+              class="form-control" required />
+            <label class="form-control-placeholder" for="paidAmount">የተከፈለ የገንዘብ መጠን</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <input type="file" class="file-input" formControlName="image" (change)="selectFileUpload($event)"
+              #fileUpload>
+
+            <div class="file-upload">
+              {{selectedFile || "No file uploaded yet."}}
+              <button mat-mini-fab color="primary" class="btn btn-info " (click)="fileUpload.click()">
+                <mat-icon>attach_file</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <textarea formControlName="remark" placeholder="ተጨማሪ መግለጫ ካለ" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="col-6">
+          <img [src]="imgUrl" height="100" width="100%" *ngIf="imgUrl" />
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <div mat-dialog-actions>
+    <div class="form-group input-group ">
+      <div mat-dialog-actions class="text-center">
+        <button [disabled]="debitForm.invalid || isClicked" mat-button class="ml-3 btn btn-success" (click)="payDebit()">ቀሪ ክፍያ
+          መዝግብ</button>
+        <button class="btn btn-danger" mat-button mat-dialog-close>ዝጋ</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div *ngIf='!hasPermission("Debit-Pay")' class="container card text-center" >
+    <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

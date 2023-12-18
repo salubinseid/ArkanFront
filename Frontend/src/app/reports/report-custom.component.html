@@ -1,0 +1,203 @@
+<div class="col-12" *ngIf="hasPermission('Report-Custom')">
+  <h2 mat-dialog-title class="card-header d-flex justify-content-center">
+    ዝርዝር ሪፖርት
+  </h2>
+  <form [formGroup]="summaryReportForm">
+    <div class="reportContainer">
+      <div class="dateSelector">
+        <mat-form-field appearance="outline" style="width: fit-content">
+          <mat-label>ሪፖርት አይነት ምረጥ</mat-label>
+          <mat-select
+            formControlName="category"
+            required
+            (selectionChange)="categorySelected($event)"
+          >
+            <mat-option
+              *ngFor="let category of categoryList"
+              value="{{ category }}"
+            >
+              {{ category }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="dateSelector">
+        <mat-form-field appearance="outline" *ngIf="showItem">
+          <mat-label>የዕቃ አይነት ምረጥ</mat-label>
+          <mat-select formControlName="item">
+            <mat-option *ngFor="let item of items" value="{{ item.id }}">
+              {{ item.itemName }}({{ item.brand }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="dateSelector">
+        <mat-form-field
+          appearance="outline"
+          *ngIf="showCustomer"
+          style="width: fit-content"
+        >
+          <mat-label>ደንበኛ ምርጥ</mat-label>
+          <mat-select formControlName="customer">
+            <mat-option *ngFor="let item of customers" value="{{ item.id }}">
+              {{ item.custName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="dateSelector">
+        <mat-form-field
+          appearance="outline"
+          (change)="orderCategorySelected($event)"
+          *ngIf="showOrderFrom"
+          style="width: fit-content"
+        >
+          <mat-label>ከመጋዘን/ከመኪና</mat-label>
+          <mat-select formControlName="orderFrom">
+            <mat-option
+              *ngFor="let orderFrom of orderFroms"
+              value="{{ orderFrom }}"
+            >
+              {{ orderFrom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="dateSelector">
+        <mat-form-field
+          appearance="outline"
+          *ngIf="showStore"
+          style="width: fit-content"
+        >
+          <mat-label>መጋዘን ምርጥ</mat-label>
+          <mat-select formControlName="store">
+            <mat-option *ngFor="let item of stores[0]" value="{{ item.id }}">
+              {{ item.storeName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="dateSelector">
+        <mat-form-field appearance="outline">
+          <mat-label>ከቀን...</mat-label>
+
+          <!-- <mat-form-field> -->
+          <input
+            matInput
+            [matDatepicker]="picker"
+            placeholder="Choose a date"
+            formControlName="startDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="dateSelector">
+        <mat-form-field appearance="outline">
+          <mat-label>ከቀን...</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="endDate" />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="dateSelector">
+        <button
+          mat-button
+          class="btn btn-success rounded"
+          [disabled]="!summaryReportForm.valid"
+          (click)="loadReport()"
+        >
+          ሪፖርት አሳይ
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="col-12 mt-2 text-center alert-danger alert" *ngIf="!isThereData">
+    --- መረጃ የለም ---
+  </div>
+
+  <div *ngIf="selectedCategory && isThereData" class="my-container">
+    <div
+      class="report-container mt-2 p-2 alert alert-info d-flex justify-content-center"
+      *ngIf="selectedCategory == 'ሽያጭ'"
+    >
+      <span class="page-summary">አጠቃላይ ድምሮች ፦ </span>
+      <span class="page-summary">የዕቃ ብዛት ፦ {{ totalItem | number }}</span>
+      <span class="page-summary">
+        &nbsp; &nbsp; የሽያጭ = {{ totalPrice | number }} ፣</span
+      >
+      <span class="page-summary"
+        >የትራንስፖርት ፦ {{ totalTransportCost | number }} ፣</span
+      >
+      <span class="page-summary">
+        ለሹፌር የተላከ ፦ {{ totalDriverLoan | number }} ፣</span
+      >
+      <span class="page-summary"
+        >የጉዞ ውጪ ፦ {{ totalOtherExpense | number }} ፣</span
+      >
+      <span class="page-summary">የተጣራ ፦ {{ grandTotal | number }}</span>
+    </div>
+    <hr />
+    <h3 class="alert alert-info font-weight-bold text-center mt-1">
+      ከቀን {{ myDate.from | date }} እስከ {{ myDate.to | date }} ቀን ክንውን ሪፖርት
+      
+    </h3>
+    <div class="table-responsive">
+      <mat-table
+      
+        [dataSource]="dataSource"
+        matSort
+        matSortStart="desc"
+        class="table-sm table-hover table-bordered mat-elevation-z8"
+      >
+        <ng-container
+          *ngFor="let col of columnHeaders"
+          [matColumnDef]="col.name"
+        >
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ col.label }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <ng-container
+              *ngIf="
+                col.name == 'created_at' || col.name == 'updated_at';
+                else other
+              "
+            >
+              {{ element[col.name] | date }}
+            </ng-container>
+            <ng-template #other> {{ element[col.name] }}</ng-template>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+
+      <div
+        *ngIf="isThereData"
+        style="
+          display: flex;
+          justify-content: space-evenly;
+          align-items: center;
+        "
+      >
+        <mat-paginator
+          *ngIf="isThereData"
+          #paginatorRef
+          [pageSize]="100"
+          [pageSizeOptions]="[10, 25, 50, 100]"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>

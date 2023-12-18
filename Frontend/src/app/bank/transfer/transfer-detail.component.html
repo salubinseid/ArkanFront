@@ -1,0 +1,32 @@
+<div *ngIf="hasPermission('Transfer-Detail')">
+  <div class="card">
+    <div class="card-header title">የተላለፈ ሒሳብ ዝርዝር</div>
+    <div class="row">
+      <div class="card-body col-6">
+        <br />
+        <span class="detail">
+          የገንዘብ መጠን : <strong>{{ transfer.amount | number }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          ገቢ/ውጪ : <strong>{{ transfer.transferTo }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          ምክንያት : <strong>{{ transfer.reason }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          ቀን : <strong>{{ transfer.created_at | date }}</strong></span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="!hasPermission('Transfer-Detail')"
+  class="container card text-center"
+>
+  <h3 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h3>
+</div>

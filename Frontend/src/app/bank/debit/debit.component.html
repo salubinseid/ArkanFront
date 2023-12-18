@@ -1,0 +1,145 @@
+<div class="container mt-2" *ngIf="hasPermission('Debit-List')">
+  <h1 *ngIf="loading" class="alert alert-success text-center">
+    <mat-progress-spinner
+      style="margin: 0 auto"
+      class="example-margin"
+      color="warn"
+      mode="indeterminate"
+      value="20"
+      diameter="30"
+    >
+    </mat-progress-spinner>
+    Loading...
+  </h1>
+
+  <div class="container" *ngIf="dataSource.data.length > 0">
+    <div class="container">
+      <div class="row" style="background-color: white">
+        <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+          <mat-form-field fxFlex="40%">
+            <input
+              matInput
+              type="text"
+              class="search"
+              placeholder="ፈልግ"
+              [(ngModel)]="filterData"
+              (keyup)="doFilter()"
+            />
+          </mat-form-field>
+          <i class="fas fa-search mr-2 text-warning"></i>
+        </div>
+      </div>
+    </div>
+    <h2 class="card-header mb-2">የዕዳ ዝርዝር</h2>
+
+    <table
+      class="table-bordered table-sm ምት᎐"
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+      matSortStart="desc"
+    >
+      <!-- <ng-container matColumnDef="itemName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> የዕቃ ስም </th>
+            <td mat-cell *matCellDef="let element" title='Registered By {{element.fullName}}'> {{element.itemName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ብዛት </th>
+            <td mat-cell *matCellDef="let element"> {{element.quantity }} </td>
+        </ng-container>
+        <ng-container matColumnDef="salesPrice">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> የአንዱ ዋጋ </th>
+            <td mat-cell *matCellDef="let element"> {{element.salesPrice }} </td>
+        </ng-container> -->
+      <ng-container matColumnDef="SNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+        <td mat-cell *matCellDef="let item; let i = index">
+          {{ paginatorRef.pageIndex * paginatorRef.pageSize + (i + 1) }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="custName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ደንበኛ ስም</th>
+        <td
+          mat-cell
+          *matCellDef="let element"
+          title="Phone: {{ element.phone }}"
+        >
+          {{ element.custName }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="totalPrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ጠቅላላ ክፍያ</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.totalPrice | number }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="paidAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>የተከፈለ</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.paidAmount | number }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="remainAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ቀሪ ዕዳ</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.remainAmount | number }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>የተከፈለበት ቀን</th>
+        <td
+          mat-cell
+          *matCellDef="let element"
+          title="የምዝገባ ቀን: {{ element.created_at }} ፣ የተስተካከለበት ቀን : {{
+            element.updated_at
+          }}"
+        >
+          {{ element.created_at | date }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ድርጊት</th>
+
+        <td mat-cell *matCellDef="let element">
+          <!-- <button
+            *ngIf="hasPermission('Debit-Pay')"
+            mat-icon-button
+            color="accent"
+            (click)="openDialog(element)"
+          >
+            <mat-icon class="mat-18">
+              <i class="fab fa-amazon-pay"></i>
+            </mat-icon>
+          </button> -->
+          <button
+            *ngIf="hasPermission('Debit-Detail')"
+            mat-icon-button
+            color="primary"
+            (click)="viewDetail(element.id)"
+          >
+            <mat-icon class="mat-18">reorder</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator
+      #paginatorRef
+      class="col-sm"
+      [pageSize]="100"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+    ></mat-paginator>
+  </div>
+  <div
+    class="container card text-center"
+    *ngIf="dataSource.data.length == 0 && !loading"
+  >
+    <h5 class="text-danger">ምንም አይነት የተመዘገበ መረጃ የለም፡፡</h5>
+  </div>
+</div>
+<div *ngIf="!hasPermission('Debit-List')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

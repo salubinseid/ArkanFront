@@ -1,0 +1,123 @@
+<div class="container" *ngIf="hasPermission('ExpenseType-List')">
+  <h1 *ngIf="loading" class="alert alert-success text-center">
+    <mat-progress-spinner
+      style="margin: 0 auto"
+      class="example-margin"
+      color="warn"
+      mode="indeterminate"
+      value="20"
+      diameter="30"
+    >
+    </mat-progress-spinner>
+    Loading...
+  </h1>
+
+  <div class="container">
+    <div class="row" style="background-color: white">
+      <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+        <a
+          *ngIf="hasPermission('ExpenseType-Create')"
+          mat-button
+          class="btn btn-warning pr-3 mr-4"
+          (click)="openDialog()"
+        >
+          <i class="fa fa-plus-circle"></i> የወጪ አይነት መዝግብ
+        </a>
+        <mat-form-field fxFlex="40%" *ngIf="dataSource.data.length > 0">
+          <input
+            matInput
+            type="text"
+            class="search"
+            placeholder="ፈልግ"
+            [(ngModel)]="filterData"
+            (keyup)="doFilter()"
+          />
+        </mat-form-field>
+        <i class="fas fa-search mr-2 text-warning"></i>
+      </div>
+    </div>
+    <mat-table
+      *ngIf="dataSource.data.length > 0"
+      class="table-bordered table-sm mat-elevation-z8"
+      [dataSource]="dataSource"
+      matSort
+      matSortStart="desc"
+    >
+      <ng-container matColumnDef="sno">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+        <td mat-cell *matCellDef="let item; let i = index">
+          {{ paginatorRef.pageIndex * paginatorRef.pageSize + (i + 1) }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>የወጪ አይነት ስም</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ተጨማሪ መግለጫ</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="updated_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>የተስተካከለበት ቀን</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.updated_at }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>መዝጋቢ</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.fullName }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ድርጊት</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              *ngIf="hasPermission('ExpenseType-Edit')"
+              mat-icon-button
+              color="accent"
+              (click)="updateRecord(element)"
+            >
+              <mat-icon class="mat-18">edit</mat-icon>
+            </button>
+            <button
+              *ngIf="hasPermission('ExpenseType-Delete')"
+              mat-icon-button
+              color="warn"
+              (click)="deleteRecord(element)"
+            >
+              <mat-icon class="mat-18">delete</mat-icon>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </mat-table>
+    <mat-paginator
+      #paginatorRef
+      class="col-sm"
+      [pageSize]="100"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+    ></mat-paginator>
+    <div
+      class="container card text-center"
+      *ngIf="dataSource.data.length == 0 && !loading"
+    >
+      <h5 class="text-danger">ምንም አይነት የተመዘገበ መረጃ የለም፡፡</h5>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="!hasPermission('ExpenseType-List')"
+  class="container card text-center"
+>
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

@@ -1,0 +1,65 @@
+<!-- <div class="container" *ngIf="hasPermission('Load-Detail')"> -->
+<h1 *ngIf="loading" class="alert alert-success text-center">Loading...</h1>
+
+<div class="card">
+  <div class="card-header title">የጭነት ዝርዝር</div>
+  <div class="row">
+    <div class="card-body col-6">
+      <span class="detail"
+        >የዕቃው ስም : <strong>{{ load.itemName }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        የተጫነው ብዛት : <strong>{{ load.quantity }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        የጭነት ስምምነት : <strong>{{ load.pay_quantity }}</strong></span
+      >
+      <br />
+
+      <span class="detail">
+        የመሸጫ ዋጋ: <strong>{{ load.salesPrice }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        የጭነት ታሪፍ : <strong>{{ load.unitTariff }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        ምርመራ : <strong>{{ load.remark }}</strong></span
+      >
+    </div>
+    <div class="card-body col-6">
+      <span class="detail">
+        የመኪና ሰሌዳ ቁጥር : <strong>{{ load.plateNum }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        የሹፌር ስም : <strong>{{ load.driverName }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        የሹፌር ስልክ : <strong>{{ load.driverPhone }}</strong></span
+      >
+
+      <br />
+      <span class="detail">
+        መዳረሻ ቦታ ፡
+        <strong>{{ load.checkPointName }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        ወጪ የሆንበት መጋዝን : <strong>{{ load.storeName }}</strong></span
+      >
+      <br />
+      <span class="detail">
+        ቀን : <strong>{{ load.created_at | date }}</strong></span
+      >
+    </div>
+  </div>
+</div>
+<!-- </div> -->
+<div *ngIf="!hasPermission('Load-Detail')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

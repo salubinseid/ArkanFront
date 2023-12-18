@@ -1,0 +1,75 @@
+<h5 mat-dialog-title class="card-header">ከሒሳብ ሒሳብ ማዘዋወሪያ</h5>
+<!-- <form #registerItemForm="ngForm" (ngSubmit)="onSubmit()"  class="signin-form"> -->
+<form
+  *ngIf="hasPermission('Item-Transfer')"
+  [formGroup]="accountTransferForm"
+  class="signin-form"
+>
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+    <div class="form-group mt-3">
+      <label class="label" for="account_from">ከሒሳብ ቁጥር</label>
+      <!-- <input type="text" min="1" formControlName="store_from" disabled="" class="form-control" required> -->
+      <select
+        formControlName="account_from"
+        (change)="selectedFromAccount()"
+        required
+        class="form-control"
+      >
+        <option *ngFor="let account of accounts" value="{{ account.id }}">
+          {{ account.accountNumber }} - {{ account.branchName }}({{
+            account.bankName
+          }})
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="label" for="account_to">ወደ ሒሳብ ቁጥር</label>
+      <select
+        formControlName="account_to"
+        required
+        class="form-control"
+        (change)="selectedToAccount()"
+      >
+        <option *ngFor="let account of accounts" value="{{ account.id }}">
+          {{ account.accountNumber }} - {{ account.branchName }}({{
+            account.bankName
+          }})
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        min="1"
+        formControlName="amount"
+        class="form-control"
+        required
+      />
+      <label class="form-control-placeholder" for="amount">Amount</label>
+      <input type="hidden" formControlName="amount" />
+      <span class="text-danger" [hidden]="!amount?.errors?.['pattern']"
+        >የምታስገባው ቁጥር ብቻ መሆን አለበት፡፡</span
+      >
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <div class="form-group input-group">
+      <div mat-dialog-actions>
+        <button
+          mat-button
+          class="btn btn-success rounded"
+          [disabled]="!accountTransferForm.valid"
+          (click)="transferAccount()"
+        >
+          ዝውውር ፈፅም
+        </button>
+        <button class="btn btn-danger" mat-button mat-dialog-close>ዝጋ</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div *ngIf="!hasPermission('Item-Transfer')" class="container card text-center">
+  <h3 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h3>
+</div>

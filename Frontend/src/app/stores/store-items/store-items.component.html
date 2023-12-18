@@ -1,0 +1,223 @@
+<div class="container">
+  <h1 *ngIf="loading" class="alert alert-success text-center">
+    <mat-progress-spinner
+      style="margin: 0 auto"
+      class="example-margin"
+      color="warn"
+      mode="indeterminate"
+      value="20"
+      diameter="30"
+    >
+    </mat-progress-spinner>
+    Loading...
+  </h1>
+
+  <div class="container">
+    <div class="row" style="background-color: white">
+      <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+        <!-- <a
+          *ngIf="hasPermission('Store-Item-Create')"
+          mat-button
+          class="btn btn-warning pr-3 mr-4"
+          (click)="openDialog()"
+        >
+          <i class="fas fa-plus-circle"></i> ዕቃ ገቢ መዝግብ
+        </a> -->
+
+        <mat-form-field fxFlex="40%" *ngIf="dataSource.data.length > 0">
+          <input
+            matInput
+            type="text"
+            class="search"
+            placeholder="ፈልግ"
+            [(ngModel)]="filterData"
+            (keyup)="doFilter()"
+          />
+        </mat-form-field>
+        <i class="fas fa-search mr-2 text-warning"></i>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="dataSource.data.length > 0" class="card myheader">
+    በመጋዘን ያለ ዕቃ ዝርዝር መረጃ
+  </div>
+  <mat-table
+    *ngIf="dataSource.data.length > 0"
+    class="table-bordered table-sm mat-elevation-z8"
+    [dataSource]="dataSource"
+    matSort
+    matSortStart="desc"
+  >
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+      <td mat-cell *matCellDef="let item; let i = index">
+        {{ paginatorRef.pageIndex * paginatorRef.pageSize + (i + 1) }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="itemName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የዕቃ ስም</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.itemName }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="brand">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ብራንድ</th>
+      <td mat-cell *matCellDef="let element">{{ element.brand }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="salesPrice">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የአንዱ መሸጫ ዋጋ</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        class="number-align-right"
+        (dblclick)="changeSalesPrice(element.id)"
+      >
+        <!-- <input
+          *ngIf="selected.id==element.id; else elsePartForSales;"
+          value= "{{selected.data.price}}"
+          name="{{'salesPrice_' + element.id}}"
+          type="text"
+          size="7"
+          class="price number-align-right"
+          (change)="setSalesPrice(element, $event)"
+          pattern="\d+(\.\d{0,2})?"
+
+      /><ng-template #elsePartForSales> -->
+
+        <input
+          *ngIf="cspEditMode && selected.id == element.id; else cspViewMode"
+          value=""
+          formControlName="{{ 'salesPrice_' + element.id }}"
+          type="text"
+          size="4"
+          class="price number-align-right"
+          (change)="setSalesPrice(element, $event)"
+          pattern="\d+(\.\d{0,2})?"
+        />
+        <ng-template #cspViewMode>{{ element.salesPrice }}</ng-template>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="salesQty">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የሚሸጠው ብዛት</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        class="number-align-right"
+        (dblclick)="changeSalesQty(element.id)"
+      >
+        <input
+          *ngIf="csqEditMode && selected.id == element.id; else csqViewMode"
+          value=""
+          formControlName="{{ 'qty_' + element.id }}"
+          type="text"
+          size="4"
+          class="price number-align-right"
+          (change)="setSalesQty(element, $event)"
+          pattern="\d+(\.\d{0,2})?"
+        />
+        <ng-template #csqViewMode>{{ element.salesQty }}</ng-template>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="quantity">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ብዛት</th>
+      <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
+    </ng-container>
+    <ng-container matColumnDef="storeName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የሚገኝበት ቦታ</th>
+      <td mat-cell *matCellDef="let element">{{ element.storeName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="unitName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መለኪያ</th>
+      <td mat-cell *matCellDef="let element">{{ element.unitName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="fullName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መዝጋቢ</th>
+      <td mat-cell *matCellDef="let element">{{ element.fullName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="updated_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>የተጨመረበት ቀን</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        title="የምዝገባ ቀን: {{ element.created_at }} ፣ የተስተካከለበት ቀን : {{
+          element.updated_at
+        }}"
+      >
+        {{ element.updated_at | date }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button
+            *ngIf="hasPermission('Cart-Add')"
+            mat-icon-button
+            color="primary"
+            (click)="addToCart(element)"
+          >
+            <mat-icon class="mat-18">add_shopping_cart</mat-icon>
+          </button>
+          <button
+            *ngIf="hasPermission('Item-Transfer')"
+            mat-icon-button
+            color="warn"
+            (click)="openTransferDialog(element)"
+          >
+            <mat-icon class="mat-18">transform</mat-icon>
+          </button>
+
+          <button
+            *ngIf="hasPermission('Store-Item-Detail')"
+            mat-icon-button
+            color="primary"
+            (click)="viewDetail(element.id)"
+          >
+            <mat-icon class="mat-18">reorder</mat-icon>
+          </button>
+          <!-- <button
+          *ngIf="hasPermission('Store-Item-Edit')"
+          mat-icon-button
+          color="accent"
+          (click)="updateRecord(element)"
+        >
+          <mat-icon class="mat-18">edit</mat-icon>
+        </button> -->
+          <!-- <button
+          *ngIf="hasPermission('Store-Item-Delete')"
+          mat-icon-button
+          color="warn"
+          (click)="deleteRecord(element)"
+        >
+          <mat-icon class="mat-18">delete</mat-icon>
+        </button> -->
+        </mat-menu>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </mat-table>
+  <mat-paginator
+    #paginatorRef
+    class="col-sm"
+    [pageSize]="100"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+  ></mat-paginator>
+  <div
+    class="container card text-center"
+    *ngIf="dataSource.data.length == 0 && !loading"
+  >
+    <h5 class="text-danger">ምንም አይነት የተመዘገበ መረጃ የለም፡፡</h5>
+  </div>
+</div>
+<div
+  *ngIf="!hasPermission('Store-Item-List')"
+  class="container card text-center"
+>
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

@@ -1,0 +1,97 @@
+<div class="container" *ngIf="hasPermission('Store-Item-Detail')">
+  <div class="card">
+    <div class="card-header title">የእቃ ዝርዝር መረጃ</div>
+    <div class="row">
+      <div class="card-body col-6">
+        <span class="detail">
+          የዕቃ ስም: <strong>{{ item.itemName }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          መለያ ብራንድ: <strong>{{ item.brand }}</strong></span
+        >
+      </div>
+      <div class="card-body col-6">
+        <span class="detail">
+          የመጋዘን ስም: <strong>{{ item.storeName }}</strong></span
+        >
+        <br />
+        <span class="detail">
+          አሁን ያለው ብዛት: <strong>{{ item.quantity }}</strong></span
+        >
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row" style="background-color: white">
+      <div fxLayout fxLayoutAlign="center center" class="input-group col-sm">
+        <mat-form-field fxFlex="40%">
+          <input
+            matInput
+            type="text"
+            class="search"
+            placeholder="ፈልግ"
+            [(ngModel)]="filterData"
+            (keyup)="doFilter()"
+          />
+        </mat-form-field>
+        <i class="fas fa-search mr-2 text-warning"></i>
+      </div>
+    </div>
+  </div>
+  <mat-table
+    class="table-bordered table-sm mat-elevation-z8"
+    [dataSource]="dataSource"
+    matSort
+    matSortStart="desc"
+  >
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ተ.ቁ</th>
+      <td mat-cell *matCellDef="let item; let i = index">
+        {{ paginatorRef.pageIndex * paginatorRef.pageSize + (i + 1) }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="quantity">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ብዛት</th>
+      <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
+    </ng-container>
+    <ng-container matColumnDef="unitName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መለኪያ</th>
+      <td mat-cell *matCellDef="let element">{{ element.unitName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="mode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>አዲስ/የተጨመረ</th>
+      <td mat-cell *matCellDef="let element">{{ element.mode }}</td>
+    </ng-container>
+    <ng-container matColumnDef="remark">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>መግለጫ</th>
+      <td mat-cell *matCellDef="let element">{{ element.remark }}</td>
+    </ng-container>
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ገቢ ቀን</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        title="የምዝገባ ቀን: {{ element.created_at }} ፣ የተስተካከለበት ቀን : {{
+          element.updated_at
+        }}"
+      >
+        {{ element.created_at | date }}
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </mat-table>
+  <mat-paginator
+    #paginatorRef
+    class="col-sm"
+    [pageSize]="100"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+  ></mat-paginator>
+</div>
+<div
+  *ngIf="!hasPermission('Store-Item-Detail')"
+  class="container card text-center"
+>
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>

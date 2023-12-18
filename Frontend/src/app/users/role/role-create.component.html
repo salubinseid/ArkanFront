@@ -1,0 +1,55 @@
+<h2 mat-dialog-title class="card-header">የሲስትም ሚና መመዝገቢያ</h2>
+<form [formGroup]="roleForm" *ngIf="hasPermission('Role-Create')">
+  <div mat-dialog-content>
+    <div class="alert alert-danger" [hidden]="!error">{{ error }}</div>
+    <div class="row">
+      <div class="mt-4 col-sm-12 form-group">
+        <input
+          type="text"
+          formControlName="name"
+          class="form-control"
+          required
+        />
+        <label class="form-control-placeholder" for="name">የሲስተም ሚና ስም</label>
+        <!-- <span class="text-danger" [hidden]="!error.name">{{error.name}}</span> -->
+      </div>
+      <div class="form-group">
+        <label class="text-success" for="permissions">የሲስተም ፈቃድ ምረጥ</label>
+        <select
+          formControlName="permissions"
+          multiple
+          required
+          class="form-control"
+        >
+          <option
+            *ngFor="let permission of permissions"
+            value="{{ permission.id }}"
+          >
+            {{ permission.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group input-group col-sm-12">
+      <button
+        mat-button
+        class="btn btn-success w-50 text-white"
+        [disabled]="!roleForm.valid"
+        (click)="addRole()"
+      >
+        {{ actionButton }}
+      </button>
+      <button
+        class="btn btn-danger w-50 text-white"
+        mat-button
+        mat-dialog-close
+      >
+        ዝጋ
+      </button>
+    </div>
+  </div>
+</form>
+
+<div *ngIf="!hasPermission('Role-Create')" class="container card text-center">
+  <h5 class="text-danger">ይህንን አገልግሎት ለማገኘት የሚያስችል ፈቃድ የለህም፡፡</h5>
+</div>
